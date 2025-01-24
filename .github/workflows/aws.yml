@@ -35,9 +35,9 @@ env:
   ECR_REPOSITORY: rep_test_pipe               # set this to your Amazon ECR repository name
   ECS_SERVICE: testpipeservice                   # set this to your Amazon ECS service name
   ECS_CLUSTER: Testpipecluster                # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: ecs_testpipe # set this to the path to your Amazon ECS task definition
+  ECS_TASK_DEFINITION: .github/workflows/ecs_testpipe-revision1.json  # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
+  CONTAINER_NAME: testpipe           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
 
 permissions:
