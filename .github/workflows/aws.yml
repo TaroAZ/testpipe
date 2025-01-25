@@ -31,12 +31,8 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: us-east-1                       # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: rep_test_pipe               # set this to your Amazon ECR repository name
-  ECS_SERVICE: testpipeservice                # set this to your Amazon ECS service name
-  ECS_CLUSTER: Testpipecluster                # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: .github/workflows/ecs_testpipe-revision1.json  # set this to the path to your Amazon ECS task definition
-  CONTAINER_NAME: testpipe           # set this to the name of the container in the containerDefinitions section of your task definition
+  AWS_REGION: us-east-1  # Replace with your AWS region
+  ECR_REPOSITORY: rep_test_pipe  # Replace with your ECR repository name
 
 permissions:
   contents: read
@@ -56,7 +52,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -65,13 +61,11 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: 030925350335.dkr.ecr.us-east-1.amazonaws.com
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # Build a docker container and
-        # push it to ECR so that it can
-        # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
