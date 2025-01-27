@@ -67,19 +67,6 @@ jobs:
         mkdir dockertest
         cd /dockertest/
         touch Dockerfile
-        echo "# Dockerfile
-
-# Base this container on the latest Amazon Linux version
-FROM public.ecr.aws/amazonlinux/amazonlinux:latest
-
-# Install the cowsay binary
-RUN dnf install --assumeyes cowsay
-
-# Default entrypoint binary
-ENTRYPOINT [ "cowsay" ]
-
-# Default argument for the cowsay entrypoint
-CMD [ "Hello, World!" ]" > Dockerfile
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
