@@ -34,10 +34,12 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: rep_test_pipe
   ECR_REGISTRY: 030925350335.dkr.ecr.us-east-1.amazonaws.com
-  ECS_TASK_DEFINITION: path/to/task-definition.json  # Replace with your actual task definition path
-  CONTAINER_NAME: your-container-name  # Replace with your actual container name
-  ECS_SERVICE: your-ecs-service-name  # Replace with your actual ECS service name
-  ECS_CLUSTER: your-ecs-cluster-name  # Replace with your actual ECS cluster name
+  IMAGE_URI: 030925350335.dkr.ecr.us-east-1.amazonaws.com/rep_test_pipe:latest
+  # Replace these with your actual values
+  ECS_TASK_DEFINITION: path/to/task-definition.json
+  CONTAINER_NAME: your-container-name
+  ECS_SERVICE: your-ecs-service-name
+  ECS_CLUSTER: your-ecs-cluster-name
 
 permissions:
   contents: read
@@ -63,14 +65,10 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        IMAGE_TAG: ${{ github.sha }}
+    - name: Pull image from Amazon ECR
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        docker pull ${{ env.IMAGE_URI }}
+        echo "image=${{ env.IMAGE_URI }}" >> $GITHUB_OUTPUT
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
@@ -78,7 +76,7 @@ jobs:
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ steps.build-image.outputs.image }}
+        image: ${{ env.IMAGE_URI }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
